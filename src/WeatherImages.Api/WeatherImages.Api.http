@@ -1,6 +1,4 @@
-@WeatherImages.Api_HostAddress = http://localhost:5009
+@host = https://ca-weatherimages-api.delightfulbay-4b0639e1.swedencentral.azurecontainerapps.io
 
-GET {{WeatherImages.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
+### Start to create image - return jobid
+POST {{host}}/api/images
