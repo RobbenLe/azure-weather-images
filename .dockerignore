@@ -1,0 +1,6 @@
+# bin/ and obj/store the files build for window, but Container is linux so we dont want to mix files from different OS.
+
+**/bin/
+**/obj/
+.git/
+.vs/
