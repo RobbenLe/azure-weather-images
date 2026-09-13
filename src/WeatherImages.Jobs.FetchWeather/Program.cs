@@ -1,19 +1,26 @@
-﻿using Azure.Storage.Blobs;
+﻿using System.Net.Http.Json;
+using System.Text.Json;
+using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
+using WeatherImages.Shared;
 
-// ── 1. Connection string ───────────────────────────────────────────────────
-var connection = Environment.GetEnvironmentVariable("STORAGE_CONNECTION")
-    ?? throw new InvalidOperationException("STORAGE_CONNECTION is not set. Run: . .\\setenv.ps1");
+// ── 1. I check the connection string ───────────────────────────────────────────────────
+var connection = Setting.StorageConnection;
 
-const string containerName = "images";
-const string queueName = "start-job";
+//const string containerName = StorageNames.ImagesContainer;
+const string queueName = StorageNames.queueName;
 
-// ── 2. Queue client ────────────────────────────────────────────────────────
-var queueClient = new QueueClient(connection, queueName);
-await queueClient.CreateIfNotExistsAsync();
+// ── 2. I create 2 Queue client: 1 for start job and 1 for process image queue ────────────────────────────────────────────────────────
+var startQueue = new QueueClient(connection, queueName);
+await startQueue.CreateIfNotExistsAsync();
 
-// ── 3. Received message ────────────────────────────────────────────────────
-var receivedMessage = await queueClient.ReceiveMessageAsync();
+var processQueue =  new QueueClient(connection, StorageNames.ProcessImageQueue);
+await processQueue.CreateIfNotExistsAsync();
+
+// -- 3. Received message ────────────────────────────────────────────────────
+var receivedMessage = await startQueue.ReceiveMessageAsync(
+    visibilityTimeout: TimeSpan.FromMinutes(2)
+);
 
 if (receivedMessage.Value is null)
 {
@@ -21,26 +28,56 @@ if (receivedMessage.Value is null)
     return;
 }
 
-// ── 4. jobId come from the message ─────────────────────────────
+// -- 4. jobId come from the message ─────────────────────────────
 var jobId = receivedMessage.Value.MessageText;
-var blobName = $"{jobId}/hello.txt";
-
 Console.WriteLine($"Got job {jobId}");
 
-// ── 5. Write blob down ─────────────────────────────────────────────
-var containerClient = new BlobContainerClient(connection, containerName);
-await containerClient.CreateIfNotExistsAsync();
+// -- 3. I call Buienradar API and check how many Station is available ─────────────────────────────────────────
+using var httpClient = new HttpClient();
+               
+            
+var response_from_buienradar = await httpClient.GetFromJsonAsync<BuienradarFeed>("https://data.buienradar.nl/2.0/feed/json"); //Get => Read Body => Parse Json return Object to BuienradarFeed (which is defined below)
+var stations = response_from_buienradar?.Actual?.StationMeasurements;
 
-var blobClient = containerClient.GetBlobClient(blobName);
-await blobClient.UploadAsync(
-    BinaryData.FromString($"processed job {jobId}"),
-    overwrite: true);
+if (stations is null || stations.Count == 0)
+{
+    Console.WriteLine("No station data found from Buienradar API.");
+    return;
+}
 
-Console.WriteLine($"Wrote {blobClient.Uri}");
+Console.WriteLine($"Got {stations.Count} stations from Buienradar API.");
 
-// ── 6. Delete Message ─────────────────────────────────────────
-await queueClient.DeleteMessageAsync(
-    receivedMessage.Value.MessageId,
-    receivedMessage.Value.PopReceipt);
+// --4. Fan out every station own one message
+foreach (var s in stations)
+{
+    var message = new ProcessImageMessage(
+        JobId: jobId,
+        StationId: s.StationId,
+        StationName: s.StationName,
+        Region: s.Regio,
+        Temperature: s.Temperature,
+        WeatherDescription: s.WeatherDescription
+    );
+    await processQueue.SendMessageAsync(JsonSerializer.Serialize(message));
+}
 
-Console.WriteLine("Message deleted. Done.");
+Console.WriteLine($"Queue {stations.Count} image jobs");
+
+
+// --5. After processQueue receive message and process.StartQueue delete that message
+await startQueue.DeleteMessageAsync(receivedMessage.Value.MessageId, receivedMessage.Value.PopReceipt);
+Console.WriteLine("Message deleted from start queue. Job completed.");
+
+
+
+// Model receive Json from Buienradar API
+public record BuienradarFeed(ActualSection? Actual);
+public record ActualSection(List<StationMeasurement>? StationMeasurements);
+public record StationMeasurement(
+     int     StationId,
+    string  StationName,
+    string? Regio,
+    double? Temperature,
+    string? WeatherDescription
+);
+

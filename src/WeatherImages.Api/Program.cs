@@ -1,17 +1,13 @@
 using Azure.Storage.Queues;
+using WeatherImages.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var storageConnection = Environment.GetEnvironmentVariable("STORAGE_CONNECTION");
-if (storageConnection == null || storageConnection == "")
-{
-    throw new InvalidOperationException("STORAGE_CONNECTION is not set. Run: $env:STORAGE_CONNECTION = \"...\"");
-}
+var storageConnection = Setting.StorageConnection;
 
-const string queueName = "start-job";
+const string queueName = StorageNames.queueName;
 var queueClient = new QueueClient(storageConnection, queueName);
 queueClient.CreateIfNotExists();
-
 
 
 // Add services to the container.
