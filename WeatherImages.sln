@@ -9,9 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherImages.Api", "src\We
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherImages.Jobs.FetchWeather", "src\WeatherImages.Jobs.FetchWeather\WeatherImages.Jobs.FetchWeather.csproj", "{999FF02D-CDBF-41DD-82D3-02CFF6543218}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherImages.Jobs.ProcessImage", "src\WeatherImages.Jobs.ProcessImage\WeatherImages.Jobs.ProcessImage.csproj", "{AD83BB20-6343-4043-848A-CB4D59417696}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherImages.Shared", "src\WeatherImages.Shared\WeatherImages.Shared.csproj", "{417555FB-F45C-4A3E-819F-C84D449264AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherImages.Jobs.ProcessImage", "src\WeatherImages.Jobs.ProcessImage\WeatherImages.Jobs.ProcessImage.csproj", "{F183345E-DAB9-40E5-83FA-8C3C48753D68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,18 +47,6 @@ Global
 		{999FF02D-CDBF-41DD-82D3-02CFF6543218}.Release|x64.Build.0 = Release|Any CPU
 		{999FF02D-CDBF-41DD-82D3-02CFF6543218}.Release|x86.ActiveCfg = Release|Any CPU
 		{999FF02D-CDBF-41DD-82D3-02CFF6543218}.Release|x86.Build.0 = Release|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Debug|x64.Build.0 = Debug|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Debug|x86.Build.0 = Debug|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Release|x64.ActiveCfg = Release|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Release|x64.Build.0 = Release|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Release|x86.ActiveCfg = Release|Any CPU
-		{AD83BB20-6343-4043-848A-CB4D59417696}.Release|x86.Build.0 = Release|Any CPU
 		{417555FB-F45C-4A3E-819F-C84D449264AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{417555FB-F45C-4A3E-819F-C84D449264AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{417555FB-F45C-4A3E-819F-C84D449264AF}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -71,6 +59,18 @@ Global
 		{417555FB-F45C-4A3E-819F-C84D449264AF}.Release|x64.Build.0 = Release|Any CPU
 		{417555FB-F45C-4A3E-819F-C84D449264AF}.Release|x86.ActiveCfg = Release|Any CPU
 		{417555FB-F45C-4A3E-819F-C84D449264AF}.Release|x86.Build.0 = Release|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Debug|x64.Build.0 = Debug|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Debug|x86.Build.0 = Debug|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Release|x64.ActiveCfg = Release|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Release|x64.Build.0 = Release|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Release|x86.ActiveCfg = Release|Any CPU
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,7 +78,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4CD28697-3A31-46BC-8057-C1485AC512A1} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{999FF02D-CDBF-41DD-82D3-02CFF6543218} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{AD83BB20-6343-4043-848A-CB4D59417696} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{417555FB-F45C-4A3E-819F-C84D449264AF} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{F183345E-DAB9-40E5-83FA-8C3C48753D68} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

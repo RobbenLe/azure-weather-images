@@ -4,20 +4,20 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
 using WeatherImages.Shared;
 
-// ── 1. I check the connection string ───────────────────────────────────────────────────
+////////// ── 1. I check the connection string ───────────────────────────────────────────────────
 var connection = Setting.StorageConnection;
 
 //const string containerName = StorageNames.ImagesContainer;
 const string queueName = StorageNames.queueName;
 
-// ── 2. I create 2 Queue client: 1 for start job and 1 for process image queue ────────────────────────────────────────────────────────
+////////// ── 2. I create 2 Queue client: 1 for start job and 1 for process image queue ────────────────────────────────────────────────────────
 var startQueue = new QueueClient(connection, queueName);
 await startQueue.CreateIfNotExistsAsync();
 
 var processQueue =  new QueueClient(connection, StorageNames.ProcessImageQueue);
 await processQueue.CreateIfNotExistsAsync();
 
-// -- 3. Received message ────────────────────────────────────────────────────
+////////// -- 3. Received message ────────────────────────────────────────────────────
 var receivedMessage = await startQueue.ReceiveMessageAsync(
     visibilityTimeout: TimeSpan.FromMinutes(2)
 );
@@ -28,11 +28,11 @@ if (receivedMessage.Value is null)
     return;
 }
 
-// -- 4. jobId come from the message ─────────────────────────────
+////////// -- 4. jobId come from the message ─────────────────────────────
 var jobId = receivedMessage.Value.MessageText;
 Console.WriteLine($"Got job {jobId}");
 
-// -- 3. I call Buienradar API and check how many Station is available ─────────────────────────────────────────
+////////// -- 5. I call Buienradar API and check how many Station is available ─────────────────────────────────────────
 using var httpClient = new HttpClient();
                
             
@@ -47,7 +47,9 @@ if (stations is null || stations.Count == 0)
 
 Console.WriteLine($"Got {stations.Count} stations from Buienradar API.");
 
-// --4. Fan out every station own one message
+
+
+// --6. Fan out every station own one message
 foreach (var s in stations)
 {
     var message = new ProcessImageMessage(
@@ -64,7 +66,7 @@ foreach (var s in stations)
 Console.WriteLine($"Queue {stations.Count} image jobs");
 
 
-// --5. After processQueue receive message and process.StartQueue delete that message
+// --7. After processQueue receive message and process. StartQueue delete that message
 await startQueue.DeleteMessageAsync(receivedMessage.Value.MessageId, receivedMessage.Value.PopReceipt);
 Console.WriteLine("Message deleted from start queue. Job completed.");
 

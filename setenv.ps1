@@ -1,1 +1,2 @@
 $env:STORAGE_CONNECTION = $(az storage account show-connection-string -n stweatherimg707875 -g rg-weatherimages-dev --query connectionString -o tsv)
+$env:APP = "https://ca-weatherimages-api.delightfulbay-4b0639e1.swedencentral.azurecontainerapps.io"
