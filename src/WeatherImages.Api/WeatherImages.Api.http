@@ -1,10 +1,17 @@
-@host = https:ca-weatherimages-api.redbay-e7fc2782.norwayeast.azurecontainerapps.io
+@host = https://ca-weatherimages-api.redbay-e7fc2782.norwayeast.azurecontainerapps.io
 
-### Start the image creation process. Returns a unique job id.
+### 1. Start the image creation process. Returns a unique job id.
+### The work runs in the background: two Container Apps Jobs are triggered by
+### queue length (KEDA polls every 30 seconds). Allow about 2-3 minutes before
+### all 40 images are in Blob Storage.
 POST {{host}}/api/images
 
-### Fetch the status and the image links for a job.
-### Replace the id below with the jobId returned by the POST above.
+### 2. Fetch the status and the image links for the job started above.
+### Paste the jobId from step 1 here.
+### "Pending" with 0 images means the jobs have not finished yet - wait and retry.
+GET {{host}}/api/images/PASTE-JOB-ID-HERE
+
+### 3. A completed job from an earlier run, ready to inspect immediately.
 GET {{host}}/api/images/ac626648-67b0-4c40-a68b-8991de53e889
 
 ### One of the generated images, served directly from Blob Storage.
