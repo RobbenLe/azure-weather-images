@@ -1,0 +1,22 @@
+# ----- Layer 1: BUILD
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+COPY src/WeatherImages.Shared/WeatherImages.Shared.csproj src/WeatherImages.Shared/
+COPY src/WeatherImages.Jobs.ProcessImage/WeatherImages.Jobs.ProcessImage.csproj src/WeatherImages.Jobs.ProcessImage/
+RUN dotnet restore src/WeatherImages.Jobs.ProcessImage/WeatherImages.Jobs.ProcessImage.csproj
+
+COPY src/ src/
+RUN dotnet publish src/WeatherImages.Jobs.ProcessImage/WeatherImages.Jobs.ProcessImage.csproj -c Release -o /app/publish
+
+# ----- Layer 2: RUNTIME
+FROM mcr.microsoft.com/dotnet/runtime:9.0 AS runtime
+
+# ImageSharp needs at least one installed font. The Debian base image ships none.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends fonts-dejavu-core \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "WeatherImages.Jobs.ProcessImage.dll"]

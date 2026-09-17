@@ -1,4 +1,11 @@
-@host = https://ca-weatherimages-api.delightfulbay-4b0639e1.swedencentral.azurecontainerapps.io
+@host = https:ca-weatherimages-api.redbay-e7fc2782.norwayeast.azurecontainerapps.io
 
-### Start to create image - return jobid
+### Start the image creation process. Returns a unique job id.
 POST {{host}}/api/images
+
+### Fetch the status and the image links for a job.
+### Replace the id below with the jobId returned by the POST above.
+GET {{host}}/api/images/ac626648-67b0-4c40-a68b-8991de53e889
+
+### One of the generated images, served directly from Blob Storage.
+GET https://stweatherimg707875.blob.core.windows.net/images/ac626648-67b0-4c40-a68b-8991de53e889/6215.png

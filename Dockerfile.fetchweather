@@ -1,0 +1,16 @@
+# ----- Layer 1: BUILD
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+COPY src/WeatherImages.Shared/WeatherImages.Shared.csproj src/WeatherImages.Shared/
+COPY src/WeatherImages.Jobs.FetchWeather/WeatherImages.Jobs.FetchWeather.csproj src/WeatherImages.Jobs.FetchWeather/
+RUN dotnet restore src/WeatherImages.Jobs.FetchWeather/WeatherImages.Jobs.FetchWeather.csproj
+
+COPY src/ src/
+RUN dotnet publish src/WeatherImages.Jobs.FetchWeather/WeatherImages.Jobs.FetchWeather.csproj -c Release -o /app/publish
+
+# ----- Layer 2: RUNTIME
+FROM mcr.microsoft.com/dotnet/runtime:9.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "WeatherImages.Jobs.FetchWeather.dll"]
