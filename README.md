@@ -144,3 +144,47 @@ Apps environment, so the API and both jobs share one environment.
 - GitHub Actions build and deploy
 - Authentication on the request API
 - Table Storage for real job status
+
+
+###### Trying the API
+
+The requests are documented in `src/WeatherImages.Api/WeatherImages.Api.http`.
+That format is supported natively by Visual Studio 2022 and JetBrains Rider, and
+by the REST Client extension in VS Code.
+
+If you would rather not use an editor, everything can be tested from a terminal
+or a browser.
+
+**Base URL**
+
+```
+https://ca-weatherimages-api.redbay-e7fc2782.norwayeast.azurecontainerapps.io
+```
+
+**1. Start a job** (returns a job id)
+
+```bash
+curl -X POST https://ca-weatherimages-api.redbay-e7fc2782.norwayeast.azurecontainerapps.io/api/images
+```
+
+The work runs in the background through two queue-triggered Container Apps Jobs.
+KEDA polls every 30 seconds, so allow about 2-3 minutes before all images exist.
+
+**2. Fetch the status and the image links**
+
+```bash
+curl https://ca-weatherimages-api.redbay-e7fc2782.norwayeast.azurecontainerapps.io/api/images/<jobId>
+```
+
+`"status": "Pending"` with `"imageCount": 0` means the jobs have not finished yet.
+
+**3. A completed job, ready to inspect immediately** — open in a browser:
+
+<https://ca-weatherimages-api.redbay-e7fc2782.norwayeast.azurecontainerapps.io/api/images/ac626648-67b0-4c40-a68b-8991de53e889>
+
+**4. One generated image, served from Blob Storage** — open in a browser:
+
+<https://stweatherimg707875.blob.core.windows.net/images/ac626648-67b0-4c40-a68b-8991de53e889/6215.png>
+
+> `POST /api/images` cannot be opened in a browser: browsers send `GET`, and the
+> endpoint answers `405 Method Not Allowed`. Use curl, or the `.http` file.
